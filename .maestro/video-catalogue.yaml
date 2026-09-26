@@ -1,0 +1,109 @@
+# Every exercise demo in the catalogue plays its own bundled clip on the
+# device (the timeline must pass 2 s), and exercises without a licensed clip
+# say so. Screenshots: catalogue-<exercise id>.
+# Run: maestro test .maestro/video-catalogue.yaml
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+- tapOn: "Workouts, tab.*"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "back squat"
+      ID: "barbell-back-squat"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "barbell bench"
+      ID: "barbell-bench-press"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "pushdown"
+      ID: "cable-triceps-pushdown"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "dumbbell bench"
+      ID: "dumbbell-bench-press"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "dumbbell curl"
+      ID: "dumbbell-curl"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "lateral"
+      ID: "dumbbell-lateral-raise"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "shoulder press"
+      ID: "dumbbell-shoulder-press"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "hammer"
+      ID: "hammer-curl"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "incline"
+      ID: "incline-dumbbell-press"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "pulldown"
+      ID: "lat-pulldown"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "leg press"
+      ID: "leg-press"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "overhead"
+      ID: "overhead-dumbbell-triceps-extension"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "plank"
+      ID: "plank"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "pull"
+      ID: "pull-up"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "push"
+      ID: "push-up"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "seated"
+      ID: "seated-cable-row"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "row"
+      ID: "one-arm-dumbbell-row"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "goblet"
+      ID: "goblet-squat"
+- runFlow:
+    file: subflows/play-demo.yaml
+    env:
+      QUERY: "romanian"
+      ID: "romanian-deadlift"
+- runFlow:
+    file: subflows/no-demo.yaml
+    env:
+      QUERY: "dead bug"
+      ID: "dead-bug"

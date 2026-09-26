@@ -1,0 +1,149 @@
+# Stage 7: layout audit. Visits every main screen and takes screenshots so
+# they can be checked on small/large iPhones and with large text sizes.
+# Run: maestro --device <UDID> test .maestro/stage7-layout.yaml
+# Creates a routine "Layout check" and a workout, then discards/deletes both.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible: "Bodios"
+    timeout: 10000
+- takeScreenshot: layout-01-home
+
+- tapOn: "Workouts, tab.*"
+- takeScreenshot: layout-02-workouts
+- scrollUntilVisible:
+    element:
+      id: "exercise-search"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "exercise-search"
+- inputText: "curl"
+# The keyboard\'s Search key closes it.
+- pressKey: Enter
+- scrollUntilVisible:
+    element:
+      id: "exercise-row-dumbbell-curl"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- takeScreenshot: layout-03-exercise
+- scrollUntilVisible:
+    element:
+      id: "draft-content-note"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- takeScreenshot: layout-04-exercise-bottom
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+- scrollUntilVisible:
+    element:
+      id: "exercise-search"
+    direction: UP
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "exercise-search"
+- eraseText: 10
+- pressKey: Enter
+
+# Routine editor and the workout logger with the keyboard open
+- scrollUntilVisible:
+    element:
+      id: "new-routine"
+    direction: UP
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "new-routine"
+- takeScreenshot: layout-05-new-routine-sheet
+- tapOn:
+    id: "routine-name-input"
+- inputText: "Layout check"
+- tapOn:
+    id: "routine-name-save"
+- scrollUntilVisible:
+    element: "Add exercise"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "curl"
+- scrollUntilVisible:
+    element:
+      id: "exercise-row-dumbbell-curl"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- takeScreenshot: layout-06-routine-editor
+- tapOn:
+    id: "start-workout"
+- takeScreenshot: layout-07-workout
+# The demonstration sheet over the workout
+- scrollUntilVisible:
+    element:
+      id: "watch-demo"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "watch-demo"
+- tapOn:
+    id: "demo-player-start"
+- takeScreenshot: layout-07b-demo-sheet
+- scrollUntilVisible:
+    element:
+      id: "draft-content-note"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- takeScreenshot: layout-07c-demo-sheet-bottom
+- tapOn:
+    id: "demo-done"
+- scrollUntilVisible:
+    element:
+      id: "set-1-weight"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn:
+    id: "set-1-weight"
+- takeScreenshot: layout-08-workout-keyboard
+- tapOn:
+    id: "keyboard-done"
+- scrollUntilVisible:
+    element:
+      id: "discard-workout"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- takeScreenshot: layout-09-workout-bottom
+- tapOn:
+    id: "discard-workout"
+- tapOn: "Discard"
+
+# Clean up the routine
+- scrollUntilVisible:
+    element: "Delete routine"
+    direction: DOWN
+    centerElement: true
+    timeout: 60000
+- tapOn: "Delete routine"
+- tapOn: "Delete"
+
+- tapOn: "Progress, tab.*"
+- takeScreenshot: layout-10-progress
+- tapOn: "Profile, tab.*"
+- takeScreenshot: layout-11-profile

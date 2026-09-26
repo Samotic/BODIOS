@@ -1,0 +1,143 @@
+# Stage 4: routine builder.
+# Run: maestro test .maestro/stage4-routines.yaml
+# Removes leftover "Arm day" routines first, and deletes its own at the end.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+
+# Clear leftovers from an interrupted run
+- runFlow:
+    when:
+      visible:
+        id: "resume-workout"
+    commands:
+      - tapOn:
+          id: "resume-workout"
+      - scrollUntilVisible:
+          element:
+            id: "discard-workout"
+          direction: DOWN
+          centerElement: true
+      - tapOn:
+          id: "discard-workout"
+      - tapOn: "Discard"
+- repeat:
+    while:
+      visible: "Arm day.*"
+    commands:
+      - tapOn: "Arm day.*"
+      - scrollUntilVisible:
+          element: "Delete routine"
+          direction: DOWN
+          centerElement: true
+      - tapOn: "Delete routine"
+      - tapOn: "Delete"
+
+# Create a routine
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "new-routine"
+- tapOn:
+    id: "routine-name-input"
+- inputText: "Arm day"
+- tapOn:
+    id: "routine-name-save"
+- assertVisible: "Add at least one exercise before you can start this routine."
+
+# Add exercises from the picker sheet and set targets
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "curl"
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- assertVisible:
+    id: "routine-item-dumbbell-curl"
+- tapOn:
+    id: "dumbbell-curl-sets-increase"
+- assertVisible: "Dumbbell Curl sets: 4"
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "hammer"
+- tapOn:
+    id: "exercise-row-hammer-curl"
+
+# Reorder with the accessible up/down buttons
+# Centre it first: the pinned "Start workout" bar covers the bottom edge.
+- scrollUntilVisible:
+    element:
+      id: "hammer-curl-up"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "hammer-curl-up"
+- scrollUntilVisible:
+    element: "1. Hammer Curl"
+    direction: UP
+    centerElement: true
+- assertVisible: "1. Hammer Curl"
+- takeScreenshot: stage4-01-editor
+
+# Everything is saved: restart the app and check
+- stopApp
+- launchApp
+- tapOn: "Workouts, tab.*"
+- tapOn: "Arm day, 2 exercises"
+- assertVisible: "1. Hammer Curl"
+- scrollUntilVisible:
+    element: "Dumbbell Curl sets: 4"
+    direction: DOWN
+    centerElement: true
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+
+# "Add to routine" from an exercise's detail page
+- tapOn:
+    id: "exercise-search"
+- inputText: "plank"
+# The keyboard\'s Search key closes it.
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-plank"
+- tapOn:
+    id: "add-to-routine"
+- tapOn: "Arm day, 2 exercises"
+- assertVisible: "Added to Arm day"
+
+# Sheets close with a swipe down
+- tapOn:
+    id: "add-to-routine"
+- assertVisible: "Add Plank to:"
+- takeScreenshot: stage4-02-picker-sheet
+- swipe:
+    start: "50%, 12%"
+    end: "50%, 95%"
+    duration: 500
+- assertVisible: "Added to Arm day"
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+
+# Home lists the routine
+- tapOn: "Home, tab.*"
+- assertVisible: "Your routines"
+- takeScreenshot: stage4-03-home
+
+# Delete asks first
+- tapOn: "Arm day, 3 exercises"
+- scrollUntilVisible:
+    element: "Delete routine"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Delete routine"
+- assertVisible: "Delete “Arm day”?"
+- tapOn: "Keep routine"
+- assertVisible: "Delete routine"
+- tapOn: "Delete routine"
+- tapOn: "Delete"
+- assertNotVisible: "Arm day.*"

@@ -1,0 +1,103 @@
+# App Store screenshots from the real app (Stage 9).
+# Run on a 6.9" iPhone Simulator with the Release build installed:
+#   xcrun simctl status_bar <UDID> override --time 9:41 --batteryState charged \
+#     --batteryLevel 100 --wifiBars 3 --cellularBars 4
+#   maestro --device <UDID> test .maestro/store-screenshots.yaml
+# It logs one real workout (Upper body: dumbbell curls), so every number shown
+# is something the app actually recorded. Retake once approved demo videos exist.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+
+# Remove a half-made routine from an interrupted run
+- repeat:
+    while:
+      visible: "Upper body.*"
+    commands:
+      - tapOn: "Upper body.*"
+      - scrollUntilVisible:
+          element: "Delete routine"
+          direction: DOWN
+          centerElement: true
+      - tapOn: "Delete routine"
+      - tapOn: "Delete"
+
+# A routine with three exercises
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "new-routine"
+- tapOn:
+    id: "routine-name-input"
+- inputText: "Upper body"
+- tapOn:
+    id: "routine-name-save"
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "curl"
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- scrollUntilVisible:
+    element: "Add exercise"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "incline"
+- tapOn:
+    id: "exercise-row-incline-dumbbell-press"
+- scrollUntilVisible:
+    element: "Add exercise"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "pulldown"
+- tapOn:
+    id: "exercise-row-lat-pulldown"
+- scrollUntilVisible:
+    element: "1. Dumbbell Curl"
+    direction: UP
+    centerElement: true
+- takeScreenshot: store-03-routine
+
+# Log the curls
+- tapOn:
+    id: "start-workout"
+- tapOn:
+    id: "set-1-weight"
+- inputText: "12"
+- tapOn:
+    id: "set-1-reps"
+- inputText: "10"
+- tapOn:
+    id: "set-2-weight"
+- inputText: "12"
+- tapOn:
+    id: "set-2-reps"
+- inputText: "10"
+- tapOn:
+    id: "keyboard-done"
+- tapOn: "Mark set 1 done"
+- tapOn: "Mark set 2 done"
+- takeScreenshot: store-02-logging
+- scrollUntilVisible:
+    element:
+      id: "finish-workout"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "finish-workout"
+- tapOn: "Finish"
+- takeScreenshot: store-05-summary
+- tapOn:
+    id: "summary-done"
+- takeScreenshot: store-01-home
+
+- tapOn: "Workouts, tab.*"
+- takeScreenshot: store-04-library
+- tapOn: "Progress, tab.*"
+- takeScreenshot: store-06-progress

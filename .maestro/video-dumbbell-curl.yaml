@@ -1,0 +1,199 @@
+# Dumbbell Curl demo, end to end, with the real bundled clip:
+# exercise detail → play → pause/replay/speed/sound/full screen, then during
+# a workout: log values, start rest, Watch demonstration, close, and check
+# nothing was lost. Works on Debug and Release builds.
+# Run: maestro test .maestro/video-dumbbell-curl.yaml
+# Creates a routine called "Video check" and deletes it at the end; the
+# workout is discarded.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+
+# Clear leftovers from an interrupted run
+- runFlow:
+    when:
+      visible:
+        id: "resume-workout"
+    commands:
+      - tapOn:
+          id: "resume-workout"
+      - scrollUntilVisible:
+          element:
+            id: "discard-workout"
+          direction: DOWN
+          centerElement: true
+      - tapOn:
+          id: "discard-workout"
+      - tapOn: "Discard"
+- runFlow:
+    when:
+      visible: "Video check.*"
+    commands:
+      - tapOn: "Video check.*"
+      - scrollUntilVisible:
+          element: "Delete routine"
+          direction: DOWN
+          centerElement: true
+      - tapOn: "Delete routine"
+      - tapOn: "Delete"
+
+# 1. Exercise detail plays the curl's own clip. Nothing autoplays.
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "exercise-search"
+- inputText: "dumbbell curl"
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- assertVisible: "Play Dumbbell Curl demo"
+- assertNotVisible:
+    id: "demo-player-video"
+- assertVisible: ".*Biceps Curls With Dumbbell.*Goulart.*CC BY-SA 4.0.*"
+- takeScreenshot: video-01-detail-poster
+- tapOn:
+    id: "demo-player-start"
+- assertVisible: "Pause Dumbbell Curl demo"
+# The timeline moving proves the clip is really playing (10.9 s long).
+- extendedWaitUntil:
+    visible:
+      id: "demo-player-timeline"
+      text: "0:0[2-9] of 0:10"
+    timeout: 15000
+- takeScreenshot: video-02-detail-playing
+- tapOn: "Pause Dumbbell Curl demo"
+- assertVisible: "Play Dumbbell Curl demo"
+- tapOn: "Replay from the start"
+- assertVisible: "Pause Dumbbell Curl demo"
+- assertVisible:
+    id: "demo-player-timeline"
+    text: "0:0[0-2] of 0:10"
+- tapOn: "Speed: normal"
+- assertVisible: "Speed: half"
+- tapOn: "Speed: half"
+# The bundled clips have no sound, so there's no sound button.
+- assertNotVisible:
+    id: "demo-player-mute"
+
+# Full screen is iOS's own player; swipe down closes it.
+- tapOn: "Full screen"
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: video-03-fullscreen
+- swipe:
+    start: "50%, 35%"
+    end: "50%, 95%"
+    duration: 500
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: "demo-player-toggle"
+
+# Leaving the screen pauses the demo (it's no longer playing when we return).
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+
+# 2. During a workout
+- tapOn:
+    id: "new-routine"
+- tapOn:
+    id: "routine-name-input"
+- inputText: "Video check"
+- tapOn:
+    id: "routine-name-save"
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "curl"
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- tapOn:
+    id: "start-workout"
+
+- tapOn:
+    id: "set-1-weight"
+- inputText: "12"
+- tapOn:
+    id: "set-1-reps"
+- inputText: "10"
+# Closes the on-screen keyboard (absent when the Mac keyboard is in use).
+- runFlow:
+    when:
+      visible:
+        id: "keyboard-done"
+    commands:
+      - tapOn:
+          id: "keyboard-done"
+- tapOn: "Mark set 1 done"
+- assertVisible:
+    id: "rest-timer"
+- tapOn:
+    id: "set-2-weight"
+- inputText: "14"
+# Closes the on-screen keyboard (absent when the Mac keyboard is in use).
+- runFlow:
+    when:
+      visible:
+        id: "keyboard-done"
+    commands:
+      - tapOn:
+          id: "keyboard-done"
+
+- scrollUntilVisible:
+    element:
+      id: "watch-demo"
+    direction: UP
+    centerElement: true
+- tapOn:
+    id: "watch-demo"
+- assertVisible:
+    id: "demo-sheet-dumbbell-curl"
+- tapOn:
+    id: "demo-player-start"
+- extendedWaitUntil:
+    visible:
+      id: "demo-player-timeline"
+      text: "0:0[2-9] of 0:10"
+    timeout: 15000
+- takeScreenshot: video-04-workout-sheet-playing
+- tapOn: "Pause Dumbbell Curl demo"
+- assertVisible: "Play Dumbbell Curl demo"
+- tapOn: "Replay from the start"
+- assertVisible: "Pause Dumbbell Curl demo"
+- tapOn:
+    id: "demo-done"
+
+# Back on the same workout: values and the rest timer are untouched.
+- assertNotVisible:
+    id: "demo-sheet-dumbbell-curl"
+- assertVisible:
+    id: "set-1-weight"
+    text: "12"
+- assertVisible:
+    id: "set-1-reps"
+    text: "10"
+- assertVisible: "Undo set 1"
+- assertVisible:
+    id: "set-2-weight"
+    text: "14"
+- assertVisible:
+    id: "rest-timer"
+- takeScreenshot: video-05-back-in-workout
+
+# Clean up: discard the workout (back to the routine), delete the routine
+- scrollUntilVisible:
+    element:
+      id: "discard-workout"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "discard-workout"
+- tapOn: "Discard"
+- scrollUntilVisible:
+    element: "Delete routine"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Delete routine"
+- tapOn: "Delete"

@@ -1,0 +1,169 @@
+# Stage 6: progress, history and settings, from real logged data.
+# Run: maestro test .maestro/stage6-progress.yaml
+# Logs one workout first (routine "Stage 6 check"), so it works on a fresh
+# install. The flow deletes its routine at the end; the workout stays in
+# history.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+
+# Clear leftovers from an interrupted run
+- runFlow:
+    when:
+      visible:
+        id: "resume-workout"
+    commands:
+      - tapOn:
+          id: "resume-workout"
+      - scrollUntilVisible:
+          element:
+            id: "discard-workout"
+          direction: DOWN
+          centerElement: true
+      - tapOn:
+          id: "discard-workout"
+      - tapOn: "Discard"
+
+- repeat:
+    while:
+      visible: "Stage 6 check.*"
+    commands:
+      - tapOn: "Stage 6 check.*"
+      - scrollUntilVisible:
+          element: "Delete routine"
+          direction: DOWN
+          centerElement: true
+      - tapOn: "Delete routine"
+      - tapOn: "Delete"
+
+# Log one curl set at 14 kg × 6
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "new-routine"
+- tapOn:
+    id: "routine-name-input"
+- inputText: "Stage 6 check"
+- tapOn:
+    id: "routine-name-save"
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "curl"
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- tapOn:
+    id: "start-workout"
+- tapOn:
+    id: "set-1-weight"
+- inputText: "14"
+- tapOn:
+    id: "set-1-reps"
+- inputText: "6"
+- tapOn:
+    id: "keyboard-done"
+- tapOn:
+    id: "complete-next-set"
+- scrollUntilVisible:
+    element:
+      id: "finish-workout"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "finish-workout"
+- tapOn: "Finish"
+- tapOn:
+    id: "summary-done"
+
+# Home shows this week's real numbers
+- assertVisible:
+    id: "home-week-workouts"
+- takeScreenshot: stage6-01-home
+
+# Progress: best lifts, stats, chart with a table view, history
+- tapOn: "Progress, tab.*"
+- assertVisible: "Best lifts"
+- assertVisible:
+    id: "best-dumbbell-curl"
+- assertVisible:
+    id: "stat-workouts"
+- takeScreenshot: stage6-02-progress
+- scrollUntilVisible:
+    element:
+      id: "workouts-chart-table-toggle"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "workouts-chart-table-toggle"
+- assertVisible: "Hide numbers"
+- scrollUntilVisible:
+    element: "Month"
+    direction: UP
+    centerElement: true
+- tapOn: "Month"
+- assertVisible: "Workouts per week"
+- takeScreenshot: stage6-03-month
+
+# Per-exercise trend
+- scrollUntilVisible:
+    element:
+      id: "best-dumbbell-curl"
+    direction: UP
+    centerElement: true
+- tapOn:
+    id: "best-dumbbell-curl"
+- assertVisible:
+    id: "exercise-best"
+- assertVisible: ".*not an estimated one-rep max.*"
+- takeScreenshot: stage6-04-trend
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+
+# Pounds change the display, not the data
+- tapOn: "Profile, tab.*"
+- tapOn: "Pounds (lb)"
+- tapOn: "Progress, tab.*"
+- assertVisible: ".*lb × .*"
+- tapOn: "Profile, tab.*"
+- tapOn: "Kilograms (kg)"
+- tapOn: "Progress, tab.*"
+- assertVisible: ".*kg × .*"
+
+# Export opens the iOS share sheet
+- tapOn: "Profile, tab.*"
+- scrollUntilVisible:
+    element:
+      id: "export-data"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "export-data"
+- extendedWaitUntil:
+    visible: "Save to Files"
+    timeout: 10000
+- takeScreenshot: stage6-05-share-sheet
+# Tapping above the share sheet closes it (retry while it animates in).
+- waitForAnimationToEnd:
+    timeout: 3000
+- repeat:
+    times: 3
+    while:
+      visible: "Save to Files"
+    commands:
+      - tapOn:
+          point: "50%, 12%"
+      - waitForAnimationToEnd:
+          timeout: 2000
+- assertNotVisible: "Save to Files"
+
+# Clean up the routine (the workout stays in history)
+- tapOn: "Home, tab.*"
+- tapOn: "Stage 6 check.*"
+- scrollUntilVisible:
+    element: "Delete routine"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Delete routine"
+- tapOn: "Delete"

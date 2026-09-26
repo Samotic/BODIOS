@@ -1,0 +1,25 @@
+# Opens one exercise from the library, plays its bundled demo until the
+# timeline passes 2 s, screenshots it, and goes back. Env: QUERY, ID.
+appId: org.reactjs.native.example.Bodios
+---
+- tapOn:
+    id: "exercise-search"
+- eraseText: 40
+- inputText: ${QUERY}
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-${ID}"
+- assertVisible:
+    id: "demo-credit"
+- tapOn:
+    id: "demo-player-start"
+- extendedWaitUntil:
+    visible:
+      id: "demo-player-timeline"
+      text: "0:0[2-9] of 0:[01][0-9]"
+    timeout: 15000
+- takeScreenshot: catalogue-${ID}
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400

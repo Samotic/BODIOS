@@ -1,0 +1,18 @@
+# An exercise with no licensed clip says so and keeps its written steps.
+# Env: QUERY, ID.
+appId: org.reactjs.native.example.Bodios
+---
+- tapOn:
+    id: "exercise-search"
+- eraseText: 40
+- inputText: ${QUERY}
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-${ID}"
+- assertVisible:
+    id: "demo-unavailable"
+- assertVisible: "How to perform"
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400

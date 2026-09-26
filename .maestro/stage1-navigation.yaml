@@ -1,0 +1,38 @@
+# Stage 1: tabs, stack routes and swipe-back. Works with or without saved data.
+# Run: maestro test .maestro/stage1-navigation.yaml
+# Tabs are matched as "<Name>, tab, n of 4" (their VoiceOver name).
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+- assertVisible: "Bodios"
+- takeScreenshot: stage1-01-home
+
+- tapOn: "Workouts, tab.*"
+- assertVisible:
+    id: "exercise-search"
+- tapOn: "Progress, tab.*"
+- assertVisible: "Your progress"
+- tapOn: "Profile, tab.*"
+- assertVisible: "Settings"
+- tapOn: "Home, tab.*"
+- assertVisible: "Bodios"
+
+# Swipe-back from a pushed screen. (Workout drafts surviving navigation are
+# checked in stage5-workout.yaml.)
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "exercise-search"
+- inputText: "curl"
+# The keyboard\'s Search key closes it.
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- assertVisible:
+    id: "exercise-detail-dumbbell-curl"
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+- assertVisible:
+    id: "exercise-search"

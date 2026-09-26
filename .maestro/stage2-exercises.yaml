@@ -1,0 +1,67 @@
+# Stage 2: exercise library from SQLite, search/filter, detail, restart.
+# Run: maestro test .maestro/stage2-exercises.yaml
+# Tabs are matched as "<Name>, tab, n of 4" (their VoiceOver name).
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+- tapOn: "Workouts, tab.*"
+- assertVisible: "20 exercises"
+- takeScreenshot: stage2-01-library
+
+# Search
+- tapOn:
+    id: "exercise-search"
+- inputText: "curl"
+- assertVisible: "2 exercises"
+- assertVisible:
+    id: "exercise-row-dumbbell-curl"
+- assertVisible:
+    id: "exercise-row-hammer-curl"
+- pressKey: Enter
+
+# Detail
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- assertVisible: "Weight per dumbbell and reps"
+- assertVisible: "Play Dumbbell Curl demo"
+- takeScreenshot: stage2-02-detail-top
+- scrollUntilVisible:
+    element:
+      id: "draft-content-note"
+    direction: DOWN
+    centerElement: true
+- takeScreenshot: stage2-03-detail-bottom
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+- assertVisible: "2 exercises"
+
+# Filters combine with each other and with search
+- tapOn:
+    id: "exercise-search"
+- eraseText: 10
+- pressKey: Enter
+- tapOn: "Chest"
+- tapOn: "Dumbbells"
+- assertVisible: "2 exercises"
+- assertVisible:
+    id: "exercise-row-incline-dumbbell-press"
+- takeScreenshot: stage2-04-filtered
+
+# Empty search explains itself and can be cleared
+- tapOn:
+    id: "exercise-search"
+- inputText: "zzzz"
+# The keyboard\'s Search key closes it.
+- pressKey: Enter
+- assertVisible: "No matching exercises"
+- tapOn: "Clear search and filters"
+- assertVisible: "20 exercises"
+
+# Restart: the library still loads from the saved database
+- stopApp
+- launchApp
+- tapOn: "Workouts, tab.*"
+- assertVisible: "20 exercises"

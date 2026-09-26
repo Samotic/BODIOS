@@ -1,0 +1,51 @@
+# Stage 3: demo player, with real bundled clips.
+# Run: maestro test .maestro/stage3-video.yaml
+# Full controls and the workout sheet: video-dumbbell-curl.yaml.
+# Every clip in the catalogue: video-catalogue.yaml.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+
+# An exercise without a licensed clip says so honestly.
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "exercise-search"
+- inputText: "dead bug"
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-dead-bug"
+- assertVisible:
+    id: "demo-unavailable"
+- assertVisible: "How to perform"
+- swipe:
+    start: "1%, 50%"
+    end: "85%, 50%"
+    duration: 400
+
+# Nothing autoplays: poster + play button first.
+- tapOn:
+    id: "exercise-search"
+- eraseText: 40
+- inputText: "dumbbell curl"
+- pressKey: Enter
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- assertVisible: "Play Dumbbell Curl demo"
+- assertNotVisible:
+    id: "demo-player-video"
+- tapOn:
+    id: "demo-player-start"
+- extendedWaitUntil:
+    visible:
+      id: "demo-player-timeline"
+      text: "0:0[1-9] of 0:10"
+    timeout: 15000
+- takeScreenshot: stage3-01-playing
+
+# Leaving the foreground pauses the demo.
+- assertVisible: "Pause Dumbbell Curl demo"
+- pressKey: Home
+- launchApp:
+    stopApp: false
+- assertVisible: "Play Dumbbell Curl demo"

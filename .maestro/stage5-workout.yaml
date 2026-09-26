@@ -1,0 +1,161 @@
+# Stage 5: a complete, recoverable workout.
+# Run: maestro test .maestro/stage5-workout.yaml
+# Creates a routine called "Stage 5 check" and deletes it at the end. The
+# finished workout stays in history.
+appId: org.reactjs.native.example.Bodios
+---
+- launchApp:
+    stopApp: true
+
+# Clear leftovers from an interrupted run
+- runFlow:
+    when:
+      visible:
+        id: "resume-workout"
+    commands:
+      - tapOn:
+          id: "resume-workout"
+      - scrollUntilVisible:
+          element:
+            id: "discard-workout"
+          direction: DOWN
+          centerElement: true
+      - tapOn:
+          id: "discard-workout"
+      - tapOn: "Discard"
+- runFlow:
+    when:
+      visible: "Stage 5 check.*"
+    commands:
+      - tapOn: "Stage 5 check.*"
+      - scrollUntilVisible:
+          element: "Delete routine"
+          direction: DOWN
+          centerElement: true
+      - tapOn: "Delete routine"
+      - tapOn: "Delete"
+
+# A routine with a dumbbell exercise and a timed one
+- tapOn: "Workouts, tab.*"
+- tapOn:
+    id: "new-routine"
+- tapOn:
+    id: "routine-name-input"
+- inputText: "Stage 5 check"
+- tapOn:
+    id: "routine-name-save"
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "curl"
+- tapOn:
+    id: "exercise-row-dumbbell-curl"
+- tapOn: "Add exercise"
+- tapOn:
+    id: "picker-search"
+- inputText: "plank"
+- tapOn:
+    id: "exercise-row-plank"
+
+# Start: values are blank until entered
+- tapOn:
+    id: "start-workout"
+- assertVisible:
+    id: "active-workout-screen"
+- assertVisible: "Weight per dumbbell"
+
+# Completing without values explains what's missing
+- tapOn:
+    id: "complete-next-set"
+- assertVisible: "Set 1: Enter reps first."
+
+- tapOn:
+    id: "set-1-weight"
+- inputText: "12.5"
+- tapOn:
+    id: "set-1-reps"
+- inputText: "10"
+# Number pads have no return key; the Done bar above the keyboard closes it.
+- tapOn:
+    id: "keyboard-done"
+- tapOn:
+    id: "complete-next-set"
+- assertVisible: "Undo set 1"
+- assertVisible:
+    id: "rest-timer"
+- takeScreenshot: stage5-01-logging
+
+# Force-quit mid-workout and reopen: sets and rest timer come back
+- stopApp
+- launchApp
+- tapOn:
+    id: "resume-workout"
+- assertVisible: "Undo set 1"
+- assertVisible: "12.5"
+- assertVisible:
+    id: "rest-timer"
+
+# Rest timer controls
+- tapOn: "Pause rest timer"
+- assertVisible: "Rest paused"
+- tapOn: "Resume rest timer"
+- assertVisible: "Rest timer"
+- tapOn:
+    id: "rest-skip"
+- assertNotVisible:
+    id: "rest-timer"
+
+# Watch the demonstration and come back to the same workout
+- scrollUntilVisible:
+    element:
+      id: "watch-demo"
+    direction: UP
+    centerElement: true
+- tapOn:
+    id: "watch-demo"
+- assertVisible:
+    id: "demo-sheet-dumbbell-curl"
+- tapOn:
+    id: "demo-done"
+- assertVisible: "Undo set 1"
+
+# The timed exercise logs time, not weight
+- tapOn:
+    id: "next-exercise"
+- assertVisible:
+    id: "set-1-time"
+- tapOn:
+    id: "set-1-time"
+- inputText: "45"
+- tapOn:
+    id: "keyboard-done"
+- tapOn: "Mark set 1 done"
+- assertVisible: "Undo set 1"
+
+# Finish (asks first), then an honest summary
+- scrollUntilVisible:
+    element:
+      id: "finish-workout"
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: "finish-workout"
+- assertVisible: "Finish workout?"
+- tapOn: "Finish"
+- assertVisible: "Workout complete"
+- assertVisible: "Set 1: 12.5 kg × 10"
+- assertVisible: "Set 1: 0:45"
+- takeScreenshot: stage5-02-summary
+- tapOn:
+    id: "summary-done"
+- assertNotVisible:
+    id: "resume-workout"
+
+# Clean up the routine (history keeps the finished workout)
+- tapOn: "Stage 5 check, 2 exercises"
+- scrollUntilVisible:
+    element: "Delete routine"
+    direction: DOWN
+    centerElement: true
+- tapOn: "Delete routine"
+- tapOn: "Delete"
